@@ -1,58 +1,140 @@
 package org.yearup.data.mysql;
 
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.yearup.data.CategoryDao;
 import org.yearup.models.Category;
 
 import javax.sql.DataSource;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
-{
-    public MySqlCategoryDao(DataSource dataSource)
-    {
+public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
+
+    @Autowired
+    public MySqlCategoryDao(DataSource dataSource) {
         super(dataSource);
     }
 
     @Override
-    public List<Category> getAllCategories()
-    {
+    public List<Category> getAllCategories() {
+        List<Category> categories = new ArrayList<>();
+
         String sql = "SELECT * FROM categories";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Category.class));
+
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                Category category = new Category();
+                category.setCategoryId(resultSet.getInt("category_id"));
+                category.setName(resultSet.getString("name"));
+                category.setDescription(resultSet.getString("description"));
+                categories.add(category);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return categories;
     }
 
     @Override
-    public Category getById(int categoryId)
-    {
+    public Category getById(int categoryId) {
         String sql = "SELECT * FROM categories WHERE category_id = ?";
-        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Category.class), categoryId);
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, categoryId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Category category = new Category();
+                    category.setCategoryId(resultSet.getInt("category_id"));
+                    category.setName(resultSet.getString("name"));
+                    category.setDescription(resultSet.getString("description"));
+                    return category;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Override
-    public Category create(Category category)
-    {
+    public Category create(Category category) {
         String sql = "INSERT INTO categories (name, description) VALUES (?, ?)";
-        jdbcTemplate.update(sql, category.getName(), category.getDescription());
 
-        int newId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
-        category.setCategoryId(newId);
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            statement.setString(1, category.getName());
+            statement.setString(2, category.getDescription());
+            statement.executeUpdate();
+
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (keys.next()) {
+                    category.setCategoryId(keys.getInt(1));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return category;
     }
 
     @Override
-    public void update(int categoryId, Category category)
-    {
+    public void update(int categoryId, Category category) {
         String sql = "UPDATE categories SET name = ?, description = ? WHERE category_id = ?";
-        jdbcTemplate.update(sql, category.getName(), category.getDescription(), categoryId);
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, category.getName());
+            statement.setString(2, category.getDescription());
+            statement.setInt(3, categoryId);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void delete(int categoryId)
-    {
+    public void delete(int categoryId) {
         String sql = "DELETE FROM categories WHERE category_id = ?";
-        jdbcTemplate.update(sql, categoryId);
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, categoryId);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Category mapRow(ResultSet row) throws SQLException {
+        int categoryId = row.getInt("category_id");
+        String name = row.getString("name");
+        String description = row.getString("description");
+
+        Category category = new Category();
+        category.setCategoryId(categoryId);
+        category.setName(name);
+        category.setDescription(description);
+
+        return category;
     }
 }
-
