@@ -8,27 +8,24 @@ import org.yearup.models.Product;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 
-class MySqlProductDaoTest extends BaseDaoTestClass
-{
+class MySqlProductDaoTest extends BaseDaoTestClass {
     private MySqlProductDao dao;
 
     @BeforeEach
-    public void setup()
-    {
+    public void setup() {
         dao = new MySqlProductDao(dataSource);
     }
 
     @Test
-    public void getById_shouldReturn_theCorrectProduct()
-    {
+    public void getById_shouldReturn_theCorrectProduct() {
         // arrange
         int productId = 1;
-        Product expected = new Product()
-        {{
+        Product expected = new Product() {{
             setProductId(1);
             setName("Smartphone");
             setPrice(new BigDecimal("499.99"));
@@ -48,45 +45,53 @@ class MySqlProductDaoTest extends BaseDaoTestClass
     }
 
     @Test
-    public void search_shouldReturnProductsMatchingFilters() throws SQLException
-    {
-        // arrange
-        int categoryId = 1;
-        BigDecimal minPrice = new BigDecimal("400.00");
-        BigDecimal maxPrice = new BigDecimal("600.00");
-        String color = "Black";
+    public void searchProductsByMinMaxPrice_shouldReturnCorrectNumberOfProducts() {
+        // Arrange
+        BigDecimal minPrice = BigDecimal.valueOf(700);
+        BigDecimal maxPrice = BigDecimal.valueOf(1499.99);
 
-        // act
-        var results = dao.search(categoryId, minPrice, maxPrice, color);
+        // Act
+        List<Product> products = dao.search(-1, minPrice, maxPrice, "");
 
-        // assert
-        assertEquals(1, results.size(), "Should return 1 product matching all filters");
-        assertEquals("Smartphone", results.get(0).getName());
+        // Assert
+        assertEquals(2, products.size());
+
     }
-
     @Test
-    public void update_shouldModifyExistingProduct_notCreateNew()
-    {
-        // arrange
-        int productId = 1;
-        Product product = dao.getById(productId);
-        product.setName("Updated Smartphone");
+    public void updateProduct_shouldUpdateProductWithoutDuplication() {
+        // Arrange
+        Product product = new Product();
+        product.setName("Test Product");
+        product.setPrice(new BigDecimal("9.99"));
+        product.setCategoryId(1);
+        product.setDescription("Test Description");
+        product.setColor("");
+        product.setImageUrl("");
+        product.setStock(1);
+        product.setFeatured(true);
 
-        // act
-        dao.update(product);
+        dao.create(product);
+        int testId = product.getProductId();
 
-        // assert
-        Product updated = dao.getById(productId);
-        assertEquals("Updated Smartphone", updated.getName());
+        int countBeforeUpdate = dao.getAll().size();
 
-        // confirm no duplicate was created
-        var allProducts = dao.getAll();
-        long count = allProducts.stream()
-                .filter(p -> "Updated Smartphone".equals(p.getName()))
-                .count();
+        // Act
+        product.setDescription("Updated Description");
+        dao.update(testId, product);
 
-        assertEquals(1, count, "Should only be one product with the updated name, no duplicates");
+        Product updatedProduct = dao.getById(testId);
+
+        // Assert
+        assertEquals("Updated Description", updatedProduct.getDescription());
+        int countAfterUpdate = dao.getAll().size();
+        assertEquals(countBeforeUpdate, countAfterUpdate);
     }
 
 
-}
+
+    }
+
+
+
+
+

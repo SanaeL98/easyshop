@@ -26,7 +26,6 @@ public class CategoriesController
     @Autowired
     private ProductDao productDao;
 
-
     // add the appropriate annotation for a get action
     @GetMapping("")
     public List<Category> getAll()
@@ -68,10 +67,12 @@ public class CategoriesController
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void updateCategory(@PathVariable int id, @RequestBody Category category)
     {
+        // ✅ Bug 2 fix: set the categoryId on the object before updating
+        category.setCategoryId(id);
+
         // update the category by id
         categoryDao.update(id, category);
     }
-
 
     // add annotation to call this method for a DELETE action - the url path must include the categoryId
     // add annotation to ensure that only an ADMIN can call this function
