@@ -43,6 +43,19 @@ Tested and implemented full category management using Postman:
 **3. Get All Categories**  
 ![get all categories](https://github.com/user-attachments/assets/61474b8b-b955-4945-a9f0-159b462efcb3)
 
+**4.Put Updated a product as an admin**
+![Put update product 2](https://github.com/user-attachments/assets/4f895c35-92ab-455e-93c7-8257e07c12b8)
+![Put update product 1](https://github.com/user-attachments/assets/d0872685-f8d3-469c-b3b6-1f9bd31a0bd2)
+
+**5. Add category not admin**
+![Add Category not admin](https://github.com/user-attachments/assets/bc7800eb-c02b-401c-9e08-4d853c46893b)
+
+**6. Delete category as admin**
+![Delete Category as admin](https://github.com/user-attachments/assets/f27e64f8-bbce-4797-86e3-e342cf4f4fb6)
+
+
+
+
 ---
 
 ## 📦 Technologies Used
