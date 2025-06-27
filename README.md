@@ -53,9 +53,6 @@ Tested and implemented full category management using Postman:
 **6. Delete category as admin**
 ![Delete Category as admin](https://github.com/user-attachments/assets/f27e64f8-bbce-4797-86e3-e342cf4f4fb6)
 
-
-
-
 ---
 
 ## 📦 Technologies Used
@@ -68,8 +65,11 @@ Tested and implemented full category management using Postman:
 - GitHub
 -
   ## Most Challenging Part
-“The most challenging part for me was testing with Postman, because it was completely new for us. 
-I had to learn how to send different types of HTTP requests like GET, POST, PUT, and DELETE, and how to include things like JSON bodies and authorization tokens.”
+The most challenging part for me was testing with Postman, because it was completely new for us. 
+I had to learn how to send different types of HTTP requests like GET, POST, PUT, and DELETE, and how to include things like JSON bodies and authorization tokens.
+
+## Additional Challenge
+I also started working on Phase 3 – the Shopping Cart, but I ran into some issues. I was trying to implement it, but I got stuck, and it started causing problems in my code. Since I didn’t have enough time to fully fix it, I decided to delete it and focus on keeping the rest of the project working correctly.
 
  
 
