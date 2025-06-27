@@ -62,7 +62,8 @@ Tested and implemented full category management using Postman:
 
 - Java  
 - Spring Boot  
-- MySQL  
+- MySQL
+- Jdbc
 - Postman  
 - GitHub
 
