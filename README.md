@@ -64,7 +64,7 @@ Tested and implemented full category management using Postman:
 - Postman
 - GitHub
 -
-  ## Most Challenging Part
+## Most Challenging Part
 The most challenging part for me was testing with Postman, because it was completely new for us. 
 I had to learn how to send different types of HTTP requests like GET, POST, PUT, and DELETE, and how to include things like JSON bodies and authorization tokens.
 
